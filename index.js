@@ -89,8 +89,9 @@ inquirer.prompt([
         name: 'officeNumber',
         message: 'Please enter your office number'
       })
-       github = null
-       school = null
+      .then(({name, email, id, role, officeNumber}) => {
+        generateHtml(name, email, id, role, officeNumber)
+      })
       break
     case 'Engineer':
       inquirer.prompt({
@@ -98,8 +99,9 @@ inquirer.prompt([
         name: 'github',
         message: 'Please enter your github username'
       })
-      officeNumber = null
-      school = null
+      .then(({name, email, id, role, github}) => {
+        generateHtml(name, email, id, role, github)
+      })
       break
     case 'Intern':
       inquirer.prompt({
@@ -107,11 +109,11 @@ inquirer.prompt([
         name: 'school',
         message: 'Please enter the school you are attending'
       })
-      officeNumber = null
-      github = null
+      .then(({name, email, id, role, school}) => {
+        generateHtml(name, email, id, role, school)
+      })
       break
   }
-    generateHtml(name, email, id, role, officeNumber, github, school)
 })  
 
 const generateHtml = (name, email, id, role, officeNumber, github, school) => {
@@ -127,6 +129,8 @@ const generateHtml = (name, email, id, role, officeNumber, github, school) => {
 <body>
 
   <h1>Hello World!</h1>
+
+  <p>${name}</p>
   
 </body>
 </html>
