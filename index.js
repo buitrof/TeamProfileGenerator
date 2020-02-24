@@ -70,7 +70,7 @@ inquirer.prompt([
   message: 'Please enter your email'
 },
 {
-  type: 'input',
+  type: 'number',
   name: 'id',
   message: 'Please enter your ID'
 },
@@ -85,12 +85,12 @@ inquirer.prompt([
   switch (role) {
     case 'Manager':
       inquirer.prompt({
-        type: 'input',
+        type: 'number',
         name: 'officeNumber',
         message: 'Please enter your office number'
       })
-      .then(({name, email, id, role, officeNumber}) => {
-        generateHtml(name, email, id, role, officeNumber)
+      .then(({manName, manEmail, manId, officeNumber}) => {
+        generateManHtml(name, email, id, officeNumber)
       })
       break
     case 'Engineer':
@@ -99,8 +99,8 @@ inquirer.prompt([
         name: 'github',
         message: 'Please enter your github username'
       })
-      .then(({name, email, id, role, github}) => {
-        generateHtml(name, email, id, role, github)
+      .then(({engName, engEmail, engId, github}) => {
+        generateEngHtml(name, email, id, github)
       })
       break
     case 'Intern':
@@ -109,14 +109,14 @@ inquirer.prompt([
         name: 'school',
         message: 'Please enter the school you are attending'
       })
-      .then(({name, email, id, role, school}) => {
-        generateHtml(name, email, id, role, school)
+      .then(({intName, intEmail, intId, school}) => {
+        generateIntHtml(name, email, id, school)
       })
       break
   }
 })  
 
-const generateHtml = (name, email, id, role, officeNumber, github, school) => {
+const generateManHtml = (name, email, id, officeNumber) => {
   fs.writeFile('index.html', `
 <!DOCTYPE html>
 <html lang="en">
@@ -128,36 +128,62 @@ const generateHtml = (name, email, id, role, officeNumber, github, school) => {
 </head>
 <body>
 
-  <h1>Hello World!</h1>
+  <h1>My Team</h1>
 
   <p>${name}</p>
+  <p>${email}</p>
+  <p>${id}</p>
+  <p>${officeNumber}</p>
   
 </body>
 </html>
   `, error => error ? console.error(error) : console.log('success'))
 }
 
-async function userInput(name, email, id, role) {
-  const response = await new Promise((resolve, reject) => {
-    if (role === 'Manager') {
-      inquirer.prompt({
-        type: 'input',
-        name: 'officeNumber',
-        message: 'Please enter your office number'
-      })
-    } else if (role === 'Engineer') {
-      inquirer.prompt({
-        type: 'input',
-        name: 'github',
-        message: 'Please enter your github username'
-      })
-    } else {
-      inquirer.prompt({
-        type: 'input',
-        name: 'school',
-        message: 'Please enter the school you are attending'
-      })
-    }
-  })
-   console.log(response)
+const generateEngHtml = (name, email, id, github) => {
+  fs.writeFile('index.html', `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+  <h1>My Team</h1>
+
+  <p>${name}</p>
+  <p>${email}</p>
+  <p>${id}</p>
+  <p>${github}</p>
+  
+</body>
+</html>
+  `, error => error ? console.error(error) : console.log('success'))
+}
+
+const generateIntHtml = (name, email, id, school) => {
+  fs.writeFile('index.html', `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+  <h1>My Team</h1>
+
+  <p>${name}</p>
+  <p>${email}</p>
+  <p>${id}</p>
+  <p>${school}</p>
+  
+</body>
+</html>
+  `, error => error ? console.error(error) : console.log('success'))
 }
