@@ -95,32 +95,41 @@ inquirer.prompt(questions)
   })
   .then(({manName, manEmail, manId, officeNumber}) => {
     generateManHtml(name, email, id, officeNumber)
-    inquirer.prompt({
-      type: 'list',
-      name: 'role',
-      message: 'Please select your role in the project',
-      choices: ['Engineer', 'Intern']
-    })
-    .then(({role}) => {
-      switch (role) {
-        case 'Engineer':
-          questions.push(questionsEng)
-          inquirer.prompt(questions)
-          .then(({ name, email, id, github }) => {
-            generateEngHtml(name, email, id, github)
-          })
-          break
-        case 'Intern':
-          questions.push(questionsInt)
-          inquirer.prompt(questions)
-          .then(({ name, email, id, school }) => {
-            generateIntHtml(name, email, id, school)
-          })
-          break
-      }
-    })
+    userInput()
   }) 
-})  
+})
+
+const userInput = () => {
+  inquirer.prompt({
+    type: 'list',
+    name: 'role',
+    message: 'Please select your role in the project, or select [Done] when all team members have been added',
+    choices: ['Engineer', 'Intern', 'Done']
+  })
+  .then(({ role }) => {
+    switch (role) {
+    case 'Engineer':
+      questions.push(questionsEng)
+      inquirer.prompt(questions)
+      .then(({ name, email, id, github }) => {
+        generateEngHtml(name, email, id, github)
+        userInput()
+      })
+      break
+    case 'Intern':
+      questions.push(questionsInt)
+      inquirer.prompt(questions)
+      .then(({ name, email, id, school }) => {
+        generateIntHtml(name, email, id, school)
+        userInput()
+      })
+      break
+    case 'Done':
+      generateEndHtml()
+      break
+    }  
+  })
+}
 
 const generateManHtml = (name, email, id, officeNumber) => {
   fs.writeFile('index.html', `
@@ -151,10 +160,7 @@ const generateEngHtml = (name, email, id, github) => {
   <p>${email}</p>
   <p>${id}</p>
   <p>${github}</p>
-  
-</body>
-</html>
-  `, error => error ? console.error(error) : console.log('success'))
+  `, error => error ? console.error(error) : null)
 }
 
 const generateIntHtml = (name, email, id, school) => {
@@ -164,8 +170,12 @@ const generateIntHtml = (name, email, id, school) => {
   <p>${email}</p>
   <p>${id}</p>
   <p>${school}</p>
-  
-</body>
-</html>
-  `, error => error ? console.error(error) : console.log('success'))
+  `, error => error ? console.error(error) : null)
+}
+
+const generateEndHtml = () => {
+  fs.appendFile('index.html', `
+  </body>
+  </html>
+  `, error => error ? console.error(error) : null)
 }
