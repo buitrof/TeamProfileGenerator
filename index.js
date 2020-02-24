@@ -58,8 +58,7 @@ class Intern extends Employee {
   }
 }
 
-inquirer.prompt([
-{
+const questions = [{
   type: 'input',
   name: 'name',
   message: 'Please enter your name'
@@ -73,47 +72,54 @@ inquirer.prompt([
   type: 'number',
   name: 'id',
   message: 'Please enter your ID'
-},
-{
-  type: 'list',
-  name: 'role',
-  message: 'Please select your role in the project',
-  choices: ['Manager', 'Engineer', 'Intern']
+}]
+
+const questionsEng = {
+  type: 'input',
+  name: 'github',
+  message: 'Please enter your github username'
 }
-])
-.then(({name, email, id, role}) => {
-  switch (role) {
-    case 'Manager':
-      inquirer.prompt({
-        type: 'number',
-        name: 'officeNumber',
-        message: 'Please enter your office number'
-      })
-      .then(({manName, manEmail, manId, officeNumber}) => {
-        generateManHtml(name, email, id, officeNumber)
-      })
-      break
-    case 'Engineer':
-      inquirer.prompt({
-        type: 'input',
-        name: 'github',
-        message: 'Please enter your github username'
-      })
-      .then(({engName, engEmail, engId, github}) => {
-        generateEngHtml(name, email, id, github)
-      })
-      break
-    case 'Intern':
-      inquirer.prompt({
-        type: 'input',
-        name: 'school',
-        message: 'Please enter the school you are attending'
-      })
-      .then(({intName, intEmail, intId, school}) => {
-        generateIntHtml(name, email, id, school)
-      })
-      break
-  }
+
+const questionsInt = {
+  type: 'input',
+  name: 'school',
+  message: 'Please enter the school you are attending'
+}
+
+inquirer.prompt(questions)
+.then(({name, email, id}) => {
+  inquirer.prompt({
+    type: 'number',
+    name: 'officeNumber',
+    message: 'Please enter your office number'
+  })
+  .then(({manName, manEmail, manId, officeNumber}) => {
+    generateManHtml(name, email, id, officeNumber)
+    inquirer.prompt({
+      type: 'list',
+      name: 'role',
+      message: 'Please select your role in the project',
+      choices: ['Engineer', 'Intern']
+    })
+    .then(({role}) => {
+      switch (role) {
+        case 'Engineer':
+          questions.push(questionsEng)
+          inquirer.prompt(questions)
+          .then(({ name, email, id, github }) => {
+            generateEngHtml(name, email, id, github)
+          })
+          break
+        case 'Intern':
+          questions.push(questionsInt)
+          inquirer.prompt(questions)
+          .then(({ name, email, id, school }) => {
+            generateIntHtml(name, email, id, school)
+          })
+          break
+      }
+    })
+  }) 
 })  
 
 const generateManHtml = (name, email, id, officeNumber) => {
@@ -130,30 +136,17 @@ const generateManHtml = (name, email, id, officeNumber) => {
 
   <h1>My Team</h1>
 
+  <h4>Manager</h4>
   <p>${name}</p>
   <p>${email}</p>
   <p>${id}</p>
   <p>${officeNumber}</p>
-  
-</body>
-</html>
-  `, error => error ? console.error(error) : console.log('success'))
+  `, error => error ? console.error(error) : null)
 }
 
 const generateEngHtml = (name, email, id, github) => {
-  fs.writeFile('index.html', `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
-
-  <h1>My Team</h1>
-
+  fs.appendFile('index.html', `
+  <h4>Engineer</h4>
   <p>${name}</p>
   <p>${email}</p>
   <p>${id}</p>
@@ -165,19 +158,8 @@ const generateEngHtml = (name, email, id, github) => {
 }
 
 const generateIntHtml = (name, email, id, school) => {
-  fs.writeFile('index.html', `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
-
-  <h1>My Team</h1>
-
+  fs.appendFile('index.html', `
+  <h4>Intern</h4>
   <p>${name}</p>
   <p>${email}</p>
   <p>${id}</p>
