@@ -147,9 +147,10 @@ const generateManHtml = (name, email, id, officeNumber) => {
 
   <h4>Manager</h4>
   <p>${name}</p>
-  <p>${email}</p>
-  <p>${id}</p>
-  <p>${officeNumber}</p>
+  <p>Email: ${email}</p>
+  <p>ID: ${id}</p>
+  <p>Office Number: ${officeNumber}</p>
+  <hr>
   `, error => error ? console.error(error) : null)
 }
 
@@ -157,9 +158,10 @@ const generateEngHtml = (name, email, id, github) => {
   fs.appendFile('index.html', `
   <h4>Engineer</h4>
   <p>${name}</p>
-  <p>${email}</p>
-  <p>${id}</p>
-  <p>${github}</p>
+  <p>Email: ${email}</p>
+  <p>ID: ${id}</p>
+  <p>GitHub: ${github}</p>
+  <hr>
   `, error => error ? console.error(error) : null)
 }
 
@@ -167,9 +169,10 @@ const generateIntHtml = (name, email, id, school) => {
   fs.appendFile('index.html', `
   <h4>Intern</h4>
   <p>${name}</p>
-  <p>${email}</p>
-  <p>${id}</p>
-  <p>${school}</p>
+  <p>Email: ${email}</p>
+  <p>ID: ${id}</p>
+  <p>School: ${school}</p>
+  <hr>
   `, error => error ? console.error(error) : null)
 }
 
