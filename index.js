@@ -58,8 +58,7 @@ class Intern extends Employee {
   }
 }
 
-inquirer.prompt([
-{
+const questions = [{
   type: 'input',
   name: 'name',
   message: 'Please enter your name'
@@ -70,51 +69,69 @@ inquirer.prompt([
   message: 'Please enter your email'
 },
 {
-  type: 'input',
+  type: 'number',
   name: 'id',
   message: 'Please enter your ID'
-},
-{
-  type: 'list',
-  name: 'role',
-  message: 'Please select your role in the project',
-  choices: ['Manager', 'Engineer', 'Intern']
+}]
+
+const questionsEng = {
+  type: 'input',
+  name: 'github',
+  message: 'Please enter your github username'
 }
-])
-.then(({name, email, id, role}) => {
-  switch (role) {
-    case 'Manager':
-      inquirer.prompt({
-        type: 'input',
-        name: 'officeNumber',
-        message: 'Please enter your office number'
-      })
-       github = null
-       school = null
-      break
+
+const questionsInt = {
+  type: 'input',
+  name: 'school',
+  message: 'Please enter the school you are attending'
+}
+
+inquirer.prompt(questions)
+.then(({name, email, id}) => {
+  inquirer.prompt({
+    type: 'number',
+    name: 'officeNumber',
+    message: 'Please enter your office number'
+  })
+  .then(({manName, manEmail, manId, officeNumber}) => {
+    generateManHtml(name, email, id, officeNumber)
+    userInput()
+  }) 
+})
+
+const userInput = () => {
+  inquirer.prompt({
+    type: 'list',
+    name: 'role',
+    message: 'Please select your role in the project, or select [Done] when all team members have been added',
+    choices: ['Engineer', 'Intern', 'Done']
+  })
+  .then(({ role }) => {
+    switch (role) {
     case 'Engineer':
-      inquirer.prompt({
-        type: 'input',
-        name: 'github',
-        message: 'Please enter your github username'
+      questions.push(questionsEng)
+      inquirer.prompt(questions)
+      .then(({ name, email, id, github }) => {
+        generateEngHtml(name, email, id, github)
+        userInput()
       })
-      officeNumber = null
-      school = null
       break
     case 'Intern':
-      inquirer.prompt({
-        type: 'input',
-        name: 'school',
-        message: 'Please enter the school you are attending'
+      questions.push(questionsInt)
+      inquirer.prompt(questions)
+      .then(({ name, email, id, school }) => {
+        generateIntHtml(name, email, id, school)
+        userInput()
       })
-      officeNumber = null
-      github = null
       break
-  }
-    generateHtml(name, email, id, role, officeNumber, github, school)
-})  
+    case 'Done':
+      generateEndHtml()
+      break
+    }  
+  })
+}
 
-const generateHtml = (name, email, id, role, officeNumber, github, school) => {
+const generateManHtml = (name, email, id, officeNumber) => {
   fs.writeFile('index.html', `
 <!DOCTYPE html>
 <html lang="en">
@@ -126,34 +143,39 @@ const generateHtml = (name, email, id, role, officeNumber, github, school) => {
 </head>
 <body>
 
-  <h1>Hello World!</h1>
-  
-</body>
-</html>
-  `, error => error ? console.error(error) : console.log('success'))
+  <h1>My Team</h1>
+
+  <h4>Manager</h4>
+  <p>${name}</p>
+  <p>${email}</p>
+  <p>${id}</p>
+  <p>${officeNumber}</p>
+  `, error => error ? console.error(error) : null)
 }
 
-async function userInput(name, email, id, role) {
-  const response = await new Promise((resolve, reject) => {
-    if (role === 'Manager') {
-      inquirer.prompt({
-        type: 'input',
-        name: 'officeNumber',
-        message: 'Please enter your office number'
-      })
-    } else if (role === 'Engineer') {
-      inquirer.prompt({
-        type: 'input',
-        name: 'github',
-        message: 'Please enter your github username'
-      })
-    } else {
-      inquirer.prompt({
-        type: 'input',
-        name: 'school',
-        message: 'Please enter the school you are attending'
-      })
-    }
-  })
-   console.log(response)
+const generateEngHtml = (name, email, id, github) => {
+  fs.appendFile('index.html', `
+  <h4>Engineer</h4>
+  <p>${name}</p>
+  <p>${email}</p>
+  <p>${id}</p>
+  <p>${github}</p>
+  `, error => error ? console.error(error) : null)
+}
+
+const generateIntHtml = (name, email, id, school) => {
+  fs.appendFile('index.html', `
+  <h4>Intern</h4>
+  <p>${name}</p>
+  <p>${email}</p>
+  <p>${id}</p>
+  <p>${school}</p>
+  `, error => error ? console.error(error) : null)
+}
+
+const generateEndHtml = () => {
+  fs.appendFile('index.html', `
+  </body>
+  </html>
+  `, error => error ? console.error(error) : null)
 }
